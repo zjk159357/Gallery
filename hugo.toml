@@ -1,0 +1,9 @@
+baseURL = "http://example.org/"
+languageCode = "zh-cn"
+title = "My photograph album"
+theme = "hugo-theme-gallery-4.9.2"
+
+
+
+
+
