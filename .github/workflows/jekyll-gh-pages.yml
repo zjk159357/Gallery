@@ -24,43 +24,20 @@ jobs:
         with:
           submodules: recursive
       
-      # 全面调试图片目录
-      - name: Comprehensive Image Debug
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "=== All image files in public directory ==="
-          find public -type f \( -name "*.gif" -o -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | sort
-          
-          echo "=== Directory structure ==="
-          tree public -L 3
-      
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: 'latest'
           extended: true
       
-      # 构建时显示详细信息
       - name: Build
-        run: |
-          hugo --minify --verbose
-          echo "Hugo build completed"
-      
-      # 详细列出所有图片构建产物
-      - name: List Image Artifacts
-        run: |
-          echo "=== All image files in public directory ==="
-          find public -type f \( -name "*.gif" -o -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | sort
-          
-          echo "=== Image file count ==="
-          find public -type f \( -name "*.gif" -o -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | wc -l
+        run: hugo --minify
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: './public'
   
