@@ -24,44 +24,36 @@ jobs:
         with:
           submodules: recursive
       
+      - name: Debug Information
+        run: |
+          echo "GitHub Repository: ${{ github.repository }}"
+          echo "Workflow Run ID: ${{ github.run_id }}"
+          echo "Workflow Run Number: ${{ github.run_number }}"
+      
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: 'latest'
           extended: true
       
-      - name: Clean Public Directory
+      - name: Build
         run: |
-          rm -rf public
-          mkdir public
-      
-      - name: Build with Cache Busting
-        run: |
-          # 添加时间戳和随机数作为缓存破坏策略
-          TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-          RANDOM_SUFFIX=$(openssl rand -hex 4)
-          
           hugo --minify \
-               --baseURL "https://zjk159357.github.io/Gallery/" \
-               --buildFuture \
-               --templateMetrics \
-               --buildExpired
-          
-          # 在生成的文件中添加时间戳
-          find public -type f -name "*.html" -exec sed -i "s|</head>|<meta name='build-timestamp' content='$TIMESTAMP-$RANDOM_SUFFIX'></head>|g" {} +
-          
-          # 创建部署信息文件
-          echo "Deployment Timestamp: $TIMESTAMP" > public/deployment-info.txt
-          echo "Random Suffix: $RANDOM_SUFFIX" >> public/deployment-info.txt
+               --baseURL "https://zjk159357.github.io/Gallery/"
+      
+      - name: List Build Output
+        run: |
+          ls -la public
+          echo "Total files in public:"
+          find public | wc -l
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: './public'
-          name: github-pages-${{ github.sha }}
   
   deploy:
     environment:
@@ -70,19 +62,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Clear GitHub Pages Cache (Experimental)
-        continue-on-error: true
+      - name: List Available Artifacts
         run: |
-          # 尝试清除页面缓存（如果支持）
-          gh api \
-            --method DELETE \
-            -H "Accept: application/vnd.github+json" \
-            /repos/${{ github.repository }}/pages/deployment-caches
+          echo "Listing artifacts..."
+          gh run view ${{ github.run_id }} --json artifacts
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
       
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact-name: github-pages-${{ github.sha }}
+        
+      - name: Deployment Result
+        run: |
+          echo "Deployment URL: ${{ steps.deployment.outputs.page_url }}"
