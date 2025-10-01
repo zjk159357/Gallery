@@ -28,7 +28,7 @@ jobs:
       - name: Debug Images
         run: |
           pwd
-          ls -R static/images || echo "Images directory not found"
+          ls -R public/test || echo "Images directory not found"
       
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
