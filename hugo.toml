@@ -1,4 +1,4 @@
-baseURL = "https://github.com/zjk159357/Gallery/"
+baseURL = "https://zjk159357.github.io/Gallery/"
 languageCode = "zh-cn"
 title = "My photograph album"
 theme = "hugo-theme-gallery-4.9.2"
