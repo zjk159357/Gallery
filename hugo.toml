@@ -10,3 +10,9 @@ theme = "hugo-theme-gallery-4.9.2"
 [params]
   # 可能需要根据主题调整
   mainSections = ["posts", "gallery"]
+  [params.headers]
+    "/*" = [
+      "Cache-Control: no-cache, no-store, must-revalidate",
+      "Pragma: no-cache",
+      "Expires: 0"
+    ]
