@@ -1,58 +1,58 @@
 name: Deploy Hugo Static Site to Pages
 
 on:
-  # 在推送到主分支时触发
   push:
     branches: ['main']
-  
-  # 允许手动触发工作流
   workflow_dispatch:
 
-# 设置 GITHUB_TOKEN 权限
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 确保同时只有一个部署任务运行
 concurrency:
   group: 'pages'
   cancel-in-progress: true
 
 jobs:
-  # 构建作业
   build:
     runs-on: ubuntu-latest
     
     steps:
-      # 检出代码
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive  # 如果使用子模块，取消注释此行
+          submodules: recursive
       
-      # 安装 Hugo
+      # 调试图片目录
+      - name: Debug Images
+        run: |
+          pwd
+          ls -R static/images || echo "Images directory not found"
+      
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: 'latest'  # 使用最新版本
-          extended: true  # 如果需要 Hugo 扩展版本
+          hugo-version: 'latest'
+          extended: true
       
-      # 构建静态站点
+      # 构建时显示详细信息
       - name: Build
-        run: hugo --minify
+        run: hugo --minify --verbose
       
-      # 配置 GitHub Pages
+      # 列出构建产物
+      - name: List Build Artifacts
+        run: |
+          ls -R public
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
-      # 上传构建产物
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: './public'  # Hugo 默认构建目录
+          path: './public'
   
-  # 部署作业
   deploy:
     environment:
       name: github-pages
@@ -60,7 +60,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      # 部署到 GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
