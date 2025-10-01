@@ -16,28 +16,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  cleanup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.12.0
-        with:
-          access_token: ${{ github.token }}
-
   build:
-    needs: cleanup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      
-      - name: Cleanup Artifacts
-        uses: c-hive/gha-remove-artifacts@v1
-        with:
-          age: '1 day'
-          skip-recent: 5
       
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
@@ -47,8 +32,8 @@ jobs:
       
       - name: Build
         run: |
-          rm -rf public
-          hugo --minify
+          hugo --minify \
+               --baseURL "https://zjk159357.github.io/Gallery/"
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -57,7 +42,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: './public'
-          name: github-pages-${{ github.run_id }}
   
   deploy:
     environment:
@@ -69,5 +53,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact-name: github-pages-${{ github.run_id }}
