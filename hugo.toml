@@ -1,4 +1,4 @@
-baseURL = "https://your-username.github.io/your-repository-name/"
+baseURL = "https://github.com/zjk159357/Gallery/"
 languageCode = "zh-cn"
 title = "My photograph album"
 theme = "hugo-theme-gallery-4.9.2"
